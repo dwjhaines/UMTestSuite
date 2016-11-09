@@ -178,8 +178,8 @@ class Template_mixin(object):
     }
 
     DEFAULT_TITLE = 'Unit Test Report'
-    DEFAULT_DESCRIPTION = ''
-
+    DEFAULT_VERSION = ''
+    
     # ------------------------------------------------------------------------
     # HTML Template
 
@@ -325,11 +325,6 @@ h1 {
     margin-bottom: 0;
 }
 
-.heading .description {
-    margin-top: 4ex;
-    margin-bottom: 6ex;
-}
-
 /* -- css div popup ------------------------------------------------------------------------ */
 a.popup_link {
 }
@@ -399,10 +394,9 @@ a.popup_link:hover {
     HEADING_TMPL = """<div class='heading'>
 <h1>%(title)s</h1>
 %(parameters)s
-<p class='description'>%(description)s</p>
 </div>
 
-""" # variables: (title, parameters, description)
+""" # variables: (title, parameters)
 
     HEADING_ATTRIBUTE_TMPL = """<p class='attribute'><strong>%(name)s:</strong> %(value)s</p>
 """ # variables: (name, value)
@@ -607,17 +601,17 @@ class _TestResult(TestResult):
 class HTMLTestRunner(Template_mixin):
     """
     """
-    def __init__(self, stream=sys.stdout, verbosity=1, title=None, description=None):
+    def __init__(self, stream=sys.stdout, verbosity=1, title=None, version=None):
         self.stream = stream
         self.verbosity = verbosity
         if title is None:
             self.title = self.DEFAULT_TITLE
         else:
             self.title = title
-        if description is None:
-            self.description = self.DEFAULT_DESCRIPTION
+        if version is None:
+            self.version = self.DEFAULT_VERSION
         else:
-            self.description = description
+            self.version = version
 
         self.startTime = datetime.datetime.now()
 
@@ -653,8 +647,9 @@ class HTMLTestRunner(Template_mixin):
         Override this to add custom attributes.
         """
         startTime = str(self.startTime)[:19]
-        duration = str(self.stopTime - self.startTime)
+        duration = str(self.stopTime - self.startTime)[:7]
         status = []
+        version = self.version
         if result.success_count: status.append('Pass %s'    % result.success_count)
         if result.failure_count: status.append('Failure %s' % result.failure_count)
         if result.error_count:   status.append('Error %s'   % result.error_count  )
@@ -666,6 +661,7 @@ class HTMLTestRunner(Template_mixin):
             ('Start Time', startTime),
             ('Duration', duration),
             ('Status', status),
+            ('SW Version', version),
         ]
 
 
@@ -702,7 +698,6 @@ class HTMLTestRunner(Template_mixin):
         heading = self.HEADING_TMPL % dict(
             title = saxutils.escape(self.title),
             parameters = ''.join(a_lines),
-            description = saxutils.escape(self.description),
         )
         return heading
 
