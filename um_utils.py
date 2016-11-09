@@ -9,8 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC # available sin
 from selenium.webdriver.common.action_chains import ActionChains
 
 #Comment out one of the IP Addresses below depending on which transformer you want to use
-ipAddress = "http://10.165.250.201"
-# ipAddress = "http://10.165.250.249"
+# ipAddress = "http://10.165.250.201"
+ipAddress = "http://10.165.250.249"
 
 
 class user:
