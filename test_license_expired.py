@@ -17,7 +17,7 @@ import pyodbc
 
 class LicenseExpiredTest(unittest.TestCase):
     @classmethod
-    def setUp(inst):
+    def setUpClass(inst):
         # List of editors i.e. users that do not have admin rights
         inst.editors = ['chloe.anderson', 'chloe.garcia', 'chloe.jackson', 'chloe.johnson', 'chloe.jones', 'chloe.lee']
         # List of managers i.e. users with manager rights

@@ -1,9 +1,10 @@
 ###############################################################################################
 #                                                                                             # 
-# test_corrupted_license.py                                                                   #
+#  test_no_license.py                                                                         #
 #                                                                                             # 
-# Tests that up to five administrators can log in when the license has been corrupted.        #
-# Repeats the test and checks that five managers can log in but no editors should be able to. # 
+# Tests that up to five administrators can log in when there are no licenses at all in the    #
+# database. Repeats the test and checks that five managers can log in but no editors should   #
+# be able to.                                                                                 #
 #                                                                                             #
 ###############################################################################################
 import unittest
@@ -15,7 +16,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import pyodbc
 
-class CorruptedLicenseTest(unittest.TestCase):
+class NoLicenseTest(unittest.TestCase):
     @classmethod
     def setUpClass(inst):
         # List of editors i.e. users that do not have admin rights
@@ -31,10 +32,7 @@ class CorruptedLicenseTest(unittest.TestCase):
         
         # Delete all existing licenses
         db_utils.deleteAllLicenses(inst.connection, inst.cur)
-        
-        # Install license which has had random characters changed
-        inst.maxUsers = db_utils.addUserLicenseCorrupted (inst.connection, inst.cur)
-        print 'License installed with random characters changed'
+        inst.maxUsers = 0
         
     def test_administrators(self):
         # Empty list to be filled with user objects
@@ -143,8 +141,7 @@ class CorruptedLicenseTest(unittest.TestCase):
             
     @classmethod
     def tearDownClass(inst):
-        # Delete license and reinstall license for twenty-five users
-        db_utils.deleteAllLicenses(inst.connection, inst.cur)
+        # Reinstall license for twenty-five users
         maxUsers = db_utils.addTwentyFiveUserLicense(inst.connection, inst.cur)
         print 'License installed for %d users' % maxUsers
         
