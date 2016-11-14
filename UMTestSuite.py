@@ -24,8 +24,8 @@ remove_license_tests = unittest.TestLoader().loadTestsFromTestCase(RemoveLicense
 no_license_tests = unittest.TestLoader().loadTestsFromTestCase(NoLicenseTest)
 
 # create a test suite
-# test_suite = unittest.TestSuite([valid_license_tests, license_expired_tests, license_not_yet_valid_tests, incorrect_ip_address_tests, license_invalid_version_tests, corrupted_license_tests, remove_license_table_tests, remove_license_tests, no_license_tests])
-test_suite = unittest.TestSuite([no_license_tests])
+test_suite = unittest.TestSuite([valid_license_tests, license_expired_tests, license_not_yet_valid_tests, incorrect_ip_address_tests, license_invalid_version_tests, corrupted_license_tests, remove_license_table_tests, remove_license_tests, no_license_tests])
+# test_suite = unittest.TestSuite([remove_license_tests])
 
 # Use this line to run tests outside of TestRunner. Need to comment out all the TestRunner code below
 #unittest.TextTestRunner(verbosity=2).run(test_suite)

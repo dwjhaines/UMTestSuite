@@ -82,12 +82,14 @@ class RemoveLicenseTest(unittest.TestCase):
             # Check that user is still logged in
             if (db_utils.isUserLoggedIn(self.connection, self.cur, user)):
                 print 'User still logged in after %d minutes' % (x + 1)
-            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, user)), 'Test Failed: User has been logged out')  
+            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, user)), 'Test Failed: User has been logged out after %d minutes' % (x + 1))  
         
         # If still logged in after five minutes, wait another 120 seconds and check that user has been logged out
         print 'Sleeping for 120 secs.................'
         time.sleep( 120 )
-        
+        if (db_utils.isUserLoggedIn(self.connection, self.cur, user) == False):
+            print 'User has been successfully logged out'
+            
         self.assertFalse(db_utils.isUserLoggedIn(self.connection, self.cur, user), 'Test Failed: User has not been logged out after seven minutes')
              
         print 'Sleeping for 2 secs.................'
