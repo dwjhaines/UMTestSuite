@@ -28,7 +28,7 @@ test_suite = unittest.TestSuite([valid_license_tests, license_expired_tests, lic
 # test_suite = unittest.TestSuite([remove_license_tests])
 
 # Use this line to run tests outside of TestRunner. Need to comment out all the TestRunner code below
-#unittest.TextTestRunner(verbosity=2).run(test_suite)
+# unittest.TextTestRunner(verbosity=2).run(test_suite)
  
 # # open the report file
 time = strftime("%Y_%m_%d_%H_%M")

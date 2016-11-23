@@ -18,6 +18,7 @@ import pyodbc
 class ValidLicenseTest(unittest.TestCase):
     @classmethod
     def setUpClass(inst):
+        print 'Start of test: test_valid_license'
         # List of editors i.e. users that do not have admin rights
         inst.editors = ['chloe.anderson', 'chloe.garcia', 'chloe.jackson', 'chloe.johnson', 'chloe.jones', 'chloe.lee']
         # List of managers i.e. users with manager rights
@@ -38,7 +39,7 @@ class ValidLicenseTest(unittest.TestCase):
         
     def test_administrators(self):
         # Empty list to be filled with user objects
-        users = []  
+        self.users = []  
         maxAdmins = self.maxUsers + 5
         print 'Maximum number of administrators = %d' % maxAdmins
         count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
@@ -50,31 +51,25 @@ class ValidLicenseTest(unittest.TestCase):
 
         for admin in self.admins:
             # For each administrator, create a user object and add object to users list
-            users.append(um_utils.user(admin, 'quantel@'))
+            self.users.append(um_utils.user(admin, 'quantel@'))
            
         # Keep trying to log in each of the editors. Once the max number of users have been logged in, no further logins should be allowed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
             count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
+            if (result == 3): # Maximum number of users are logged in. Check that the number logged in is correct.
+                self.assertFalse ((count < maxAdmins), 'Test Failed: User should be able to log in.')
             print '\tNumber of active users (max: %d): %d' % (maxAdmins, count)
             self.assertFalse ((count > maxAdmins), 'Test Failed: Max number of users exceded.')
                 
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
-        # Log out any users that were logged in and close all the browsers
-        for user in users:
-            if (user.loggedin == True):
-                um_utils.logout(user)
-                user.loggedin = False
-            time.sleep( 1 )
-            um_utils.closeBrowser(user)
-    
+
     def test_editors(self):
         # Empty list to be filled with user objects
-        users = []  
+        self.users = []  
         maxEditors = self.maxUsers
         print 'Maximum number of editors = %d' % maxEditors
          # Get the number of users already logged in
@@ -86,31 +81,25 @@ class ValidLicenseTest(unittest.TestCase):
 
         for editor in self.editors:
             # For each editor, create a user object and add object to users list
-            users.append(um_utils.user(editor, 'quantel@'))
+            self.users.append(um_utils.user(editor, 'quantel@'))
            
         # Keep trying to log in each of the editors. Once the max number of users have been logged in, no further logins should be allowed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
             count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
+            if (result == 3): # Maximum number of users are logged in. Check that the number logged in is correct.
+                self.assertFalse ((count < maxEditors), 'Test Failed: User should be able to log in.')
             print '\tNumber of active users (max: %d): %d' % (self.maxUsers, count)
             self.assertFalse ((count > maxEditors), 'Test Failed: Max number of users exceded.')
                 
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
-        # Log out any users that were logged in and close all the browsers
-        for user in users:
-            if (user.loggedin == True):
-                um_utils.logout(user)
-                user.loggedin = False
-            time.sleep( 1 )
-            um_utils.closeBrowser(user)
      
     def test_managers(self):
         # Empty list to be filled with user objects
-        users = []      
+        self.users = []      
         maxManagers = self.maxUsers + 5
         print 'Maximum number of managers = %d' % maxManagers
         count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
@@ -122,28 +111,31 @@ class ValidLicenseTest(unittest.TestCase):
 
         for manager in self.managers:
             # For each administrator, create a user object and add object to users list
-            users.append(um_utils.user(manager, 'quantel@'))
+            self.users.append(um_utils.user(manager, 'quantel@'))
            
         # Keep trying to log in each of the editors. Once the max number of users have been logged in, no further logins should be allowed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
             count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
+            if (result == 3): # Maximum number of users are logged in. Check that the number logged in is correct.
+                self.assertFalse ((count < maxManagers), 'Test Failed: User should be able to log in.')            
             print '\tNumber of active users (max: %d): %d' % (maxManagers, count)
             self.assertFalse ((count > maxManagers), 'Test Failed: Max number of users exceded.')
 
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-    
+      
+    def tearDown(inst):
         # Log out any users that were logged in and close all the browsers
-        for user in users:
+        for user in inst.users:
             if (user.loggedin == True):
                 um_utils.logout(user)
                 user.loggedin = False
             time.sleep( 1 )
             um_utils.closeBrowser(user)
-            
+        
     @classmethod
     def tearDownClass(inst):
         # Delete license and reinstall license for twenty-five users

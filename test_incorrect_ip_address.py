@@ -19,6 +19,7 @@ import pyodbc
 class IncorrectIPAddressTest(unittest.TestCase):
     @classmethod
     def setUpClass(inst):
+        print 'Start of test: test_incorrect_ip_address'
         # List of editors i.e. users that do not have admin rights
         inst.editors = ['chloe.anderson', 'chloe.garcia', 'chloe.jackson', 'chloe.johnson', 'chloe.jones', 'chloe.lee']
         # List of managers i.e. users with manager rights
@@ -39,7 +40,7 @@ class IncorrectIPAddressTest(unittest.TestCase):
         
     def test_administrators(self):
         # Empty list to be filled with user objects
-        users = []
+        self.users = []
         
         maxAdmins = self.maxUsers + 5
         # Get the number of users already logged in
@@ -52,10 +53,10 @@ class IncorrectIPAddressTest(unittest.TestCase):
 
         for admin in self.admins:
             # For each administrator, create a user object and add object to users list
-            users.append(um_utils.user(admin, 'quantel@'))
+            self.users.append(um_utils.user(admin, 'quantel@'))
            
         # Keep trying to log in each of the editors. Once the max number of users have been logged in, no further logins should be allowed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
@@ -66,17 +67,9 @@ class IncorrectIPAddressTest(unittest.TestCase):
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
         
-        # Log out any users that were logged in and close all the browsers
-        for user in users:
-            if (user.loggedin == True):
-                um_utils.logout(user)
-                user.loggedin = False
-            time.sleep( 1 )
-            um_utils.closeBrowser(user)
-    
     def test_editors(self):
         # Empty list to be filled with user objects
-        users = []  
+        self.users = []  
         
         # Get the number of users already logged in
         count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
@@ -87,27 +80,21 @@ class IncorrectIPAddressTest(unittest.TestCase):
        
         for editor in self.editors:
             # For each editor, create a user object and add object to users list
-            users.append(um_utils.user(editor, 'quantel@'))
+            self.users.append(um_utils.user(editor, 'quantel@'))
            
         # Keep trying to log in each of the editors. If any editor can log in, the test has failed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
-            self.assertTrue ((result), 'Test Failed: User successfully logged in.')
+            if (result == 0 or result == 1):
+                user.loggedin = True 
+            self.assertTrue ((result > 1), 'Test Failed: User successfully logged in.')
                 
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
-        # Log out any users that were logged in and close all the browsers
-        for user in users:
-            if (user.loggedin == True):
-                um_utils.logout(user)
-                user.loggedin = False
-            time.sleep( 1 )
-            um_utils.closeBrowser(user)
      
     def test_managers(self):
         # Empty list to be filled with user objects
-        users = []  
+        self.users = []  
         
         maxManagers = self.maxUsers + 5
         # Get the number of users already logged in
@@ -120,10 +107,10 @@ class IncorrectIPAddressTest(unittest.TestCase):
 
         for manager in self.managers:
             # For each manager, create a user object and add object to users list
-            users.append(um_utils.user(manager, 'quantel@'))
+            self.users.append(um_utils.user(manager, 'quantel@'))
            
         # Keep trying to log in each of the editors. Once the max number of users have been logged in, no further logins should be allowed.
-        for user in users:
+        for user in self.users:
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
@@ -133,15 +120,16 @@ class IncorrectIPAddressTest(unittest.TestCase):
                 
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
+            
+    def tearDown(inst):
         # Log out any users that were logged in and close all the browsers
-        for user in users:
+        for user in inst.users:
             if (user.loggedin == True):
                 um_utils.logout(user)
                 user.loggedin = False
             time.sleep( 1 )
             um_utils.closeBrowser(user)
-            
+
     @classmethod
     def tearDownClass(inst):
         # Delete license and reinstall license for twenty-five users

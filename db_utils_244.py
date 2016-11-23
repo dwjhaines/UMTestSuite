@@ -24,7 +24,6 @@ def addFiveUserLicense (connection, cur):
     VALUES ('PVG-test-license-for-5-users------------------------f279079b-800c-8bd0-8c35-a1481b2ada924eac47e6-083b-4578-0C3C-2906c03515c00c95d80b-4448a42b8-8e5f-cc077ef13fa00c95d80b-fca6-46fd-ac92-09e76c776811866860db-c869-4e11-84af-4a9d410362bd8debc300-3532-4988-8b2c-30ce4b930a83741bfd10-50e4-41e2-a12d-961dd560a57e52aeeed5-d595-4033-8f6c-cb3ca001b8bd3a443db5-82b6-43d7-9c6e-39395a728754797e81dd-f376-4ea0-93a6-6c502499890dab3c2144-63f3-4869-b0cc-3edd033af5da6516007b-a51b-43b9-8140-fc345354ad2a154d954c-07bb-4757-a6c5-bdbe7a625f71850be65d-2319-486a-80aa-723e47e0bc070e250c1d-3ffa-4d85-88c1-f3a212fe0ee1d503b002-b983-435d-808e-4df3f4a4451c8e88964b-4420-4d6a-99e7-a59afe5e7c9bde625965-d40a-4980-9916-57b891110a279ab0d496-1f11-4b58-b9d8-c35c6d5fe56c18f0f14a-7882-460c-80a6-92d77bff3d8b64d92c8e-0b0a-4ed9-a314-4afaa437272211c125b2-2641-41b0-b0be-e59f77526cc41fc5f9ee-91e1-4dde-b989-cdb65a12b4c8829eff37-742c-4db0-8686-42286541ed9063bcea92-ae6f-4315-81b7-4ed457c788abe3e15520-94ed-4f21-afc5-6c88f96e1ed0126346e5-555a-4318-acd6-7f829e079003')'''
     cur.execute(sql_command)
     connection.commit()
-    setMaxConcurrentUsers(connection, cur, 5)
     # Return the number of users that can log in
     return 5
     
@@ -35,7 +34,6 @@ def addTenUserLicense (connection, cur):
     VALUES ('PVG-test-license-for-10-users-----------------------95cf2fa3-14af-0836-e1b6-d354b34d15c55b8a1ce4-914c-4600-0C3C-030728fd9e5013226094-8448a41c3-8d3e-ce07e7b9c83013226094-f7f6-4938-b98f-23bb49b53beec43c3de9-2dd3-4897-8cac-680d3d172fa2d8153de3-fe5c-457a-98cf-510097095047f220c321-1676-4f35-a5b8-eda081cfa97ee8b89b0c-3955-4d1b-9a0f-8657486d4c266342e9ea-1119-4928-8a15-70c27f147a3c08292cc4-4d45-4e36-9451-dc3e699598a7683fec7d-4ab9-4aa2-83ce-c7806d1542646b032d49-d4e5-45b8-81e9-058b32dc750299aab9ba-001b-42b1-8968-a91439f9d4025e74b60b-a5c9-4b1e-9d57-6f0a96d54910cb4c5f37-a2ed-478a-b35a-709bbec87dae2c5da6ac-7a58-4a3b-ac95-5635a45f4cd98e5f2b86-9eaf-4a51-8182-6f1c6378f6e8d9d41147-ebf6-4054-9515-2635e3d89170c8abf5ee-ba87-439d-aac9-a784030c91286ae8fdcd-67ef-430c-ad10-0086884f493ccbff002e-9340-4bcc-ad7c-267fc232d0d623abce08-6165-4341-a6e3-f346dbfd0a6f30d2b969-dec1-4b63-96ec-60e84faf2386c4b14c3d-5bf2-4935-b5fa-9d04ec857610dfc49b19-c91b-4743-b35f-221f39561289a661fad9-7004-488a-a69f-3edbbee3c60aca8d6e24-d4f2-4fb8-a79b-46ecfa43e003')'''
     cur.execute(sql_command)
     connection.commit()
-    setMaxConcurrentUsers(connection, cur, 10)
     # Return the number of users that can log in
     return 10
     
@@ -46,7 +44,6 @@ def addTwentyFiveUserLicense (connection, cur):
     VALUES ('PVG-test-license-for-25-users-----------------------e6d40fc5-0fac-18fb-e6d5-db49bddf3acdd13ddee5-2ff3-4c14-0C3C-7a072f286c2013850d71-2448a4094-a59b-6007ede4960013850d71-3882-480d-b914-054b83b8dc28c7dc773c-f3e0-472b-924b-4fef790eacaacaeee3c4-bfe4-42c9-9baa-23699ad82e823db6ea6a-6571-4ab1-8c0e-b9ab0d4e5ca445303853-8a84-43b2-9e74-c492c0f4b6760f9a886c-1655-4e66-b4cf-1bfa7fd6aba5afaeaba9-3c82-425c-a98b-375b8a2b0b7ec200c7c1-5113-40c3-b324-1c785c78c58c2ca7abad-2259-4863-9d74-42bc9b5a333a143b121f-a7d7-4449-93c1-0790332d33eef91ac2b9-429f-49e7-ac3d-4b2d234a0ed4afefd1af-d87f-411c-9eed-25c7ec0c614f0ee11394-f02e-460f-92b8-a34852fcd554ce82d190-9c88-463c-abbb-253949fa839b95f388e6-698e-4964-9669-113ba841c8b56c8224d9-6e56-4b79-b90f-8de9bbe118beabff22df-5015-49ba-a59e-89270f2db0231c93f751-c639-44a2-bf7a-1cacb5c42717d25d806a-cca8-4ac9-990a-27bbb3d8f21f20df0dce-c73c-4405-81c4-de0d0b46652b59c54758-5004-4721-a337-1cd67a48487e6df1aafc-2f12-4850-8751-15db96c8469c3a06e594-58a8-4c6b-a877-6061cc2aa3d16d606c95-fd0a-46e0-ad65-fcf434a77003')'''
     cur.execute(sql_command)
     connection.commit()
-    setMaxConcurrentUsers(connection, cur, 25)
     # Return the number of users that can log in
     return 25
     
@@ -144,10 +141,5 @@ def deleteLicencesTable (connection, cur):
 
 def createLicencesTable (connection, cur): 
     sql_command= 'CREATE TABLE [session_db].[dbo].[Licenses](license NCHAR(1024) NULL)'
-    cur.execute(sql_command)    
-    connection.commit()
-    
-def setMaxConcurrentUsers(connection, cur, numberOfUsers):
-    sql_command= " UPDATE [session_db].[dbo].[UMSettings] SET [Value] = %d WHERE [Setting] = 'MaxConcurrentUsers'" % numberOfUsers
     cur.execute(sql_command)    
     connection.commit()

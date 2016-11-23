@@ -19,6 +19,7 @@ import pyodbc
 class RemoveLicenseTest(unittest.TestCase):
     @classmethod
     def setUpClass(inst):
+        print 'Start of test: test_remove_license'
         # Name of administrator to be used for this test
         inst.admin = 'avaa.johnsona'
         # Name of editor to be used for this test
@@ -33,14 +34,16 @@ class RemoveLicenseTest(unittest.TestCase):
         # Delete all existing licenses
         db_utils.deleteAllLicenses(inst.connection, inst.cur)
         
-    @classmethod
     def setUp(inst):       
         # Install license for five users
+        print 'Install license for five users'
         db_utils.addFiveUserLicense(inst.connection, inst.cur)
         
     def test_administrators(self):
-        user = um_utils.user(self.admin, 'quantel@')
-        result = um_utils.login(user)
+        self.user = um_utils.user(self.admin, 'quantel@')
+        result = um_utils.login(self.user)
+        if (result == 0 or result == 1):
+            self.user.loggedin = True
         self.assertTrue ((result == 0 or result == 1), 'Test Failed: User could not log in.')
         
         # Delete all existing licenses
@@ -52,23 +55,19 @@ class RemoveLicenseTest(unittest.TestCase):
             time.sleep( 60 )
         
             # Check that user is still logged in
-            if (db_utils.isUserLoggedIn(self.connection, self.cur, user)):
+            if (db_utils.isUserLoggedIn(self.connection, self.cur, self.user)):
                 print 'User still logged in after %d minutes' % (x + 1)
-            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, user)), 'Test Failed: User has been logged out')   
+            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, self.user)), 'Test Failed: User has been logged out')   
              
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
-        # Log out any users that were logged in and close all the browsers
-        if (user.loggedin == True):
-            um_utils.logout(user)
-            user.loggedin = False
-        time.sleep( 1 )
-        um_utils.closeBrowser(user)
     
     def test_editors(self):
-        user = um_utils.user(self.editor, 'quantel@')
-        result = um_utils.login(user)
+        self.user = um_utils.user(self.editor, 'quantel@')
+        result = um_utils.login(self.user)
+        print 'Result = %d' % result
+        if (result == 0 or result == 1):
+            self.user.loggedin = True
         self.assertTrue ((result == 0 or result == 1), 'Test Failed: User could not log in.')
         
         # Delete all existing licenses
@@ -80,31 +79,26 @@ class RemoveLicenseTest(unittest.TestCase):
             time.sleep( 60 )
         
             # Check that user is still logged in
-            if (db_utils.isUserLoggedIn(self.connection, self.cur, user)):
+            if (db_utils.isUserLoggedIn(self.connection, self.cur, self.user)):
                 print 'User still logged in after %d minutes' % (x + 1)
-            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, user)), 'Test Failed: User has been logged out after %d minutes' % (x + 1))  
+            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, self.user)), 'Test Failed: User has been logged out after %d minutes' % (x + 1))  
         
         # If still logged in after five minutes, wait another 120 seconds and check that user has been logged out
         print 'Sleeping for 120 secs.................'
         time.sleep( 120 )
-        if (db_utils.isUserLoggedIn(self.connection, self.cur, user) == False):
+        if (db_utils.isUserLoggedIn(self.connection, self.cur, self.user) == False):
             print 'User has been successfully logged out'
             
-        self.assertFalse(db_utils.isUserLoggedIn(self.connection, self.cur, user), 'Test Failed: User has not been logged out after seven minutes')
+        self.assertFalse(db_utils.isUserLoggedIn(self.connection, self.cur, self.user), 'Test Failed: User has not been logged out after seven minutes')
              
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
-        # Log out any users that were logged in and close all the browsers
-        if (user.loggedin == True):
-            um_utils.logout(user)
-            user.loggedin = False
-        time.sleep( 1 )
-        um_utils.closeBrowser(user)
      
     def test_managers(self):
-        user = um_utils.user(self.manager, 'quantel@')
-        result = um_utils.login(user)
+        self.user = um_utils.user(self.manager, 'quantel@')
+        result = um_utils.login(self.user)
+        if (result == 0 or result == 1):
+            self.user.loggedin = True
         self.assertTrue ((result == 0 or result == 1), 'Test Failed: User could not log in.')
         
         # Delete all existing licenses
@@ -116,19 +110,20 @@ class RemoveLicenseTest(unittest.TestCase):
             time.sleep( 60 )
         
             # Check that user is still logged in
-            if (db_utils.isUserLoggedIn(self.connection, self.cur, user)):
+            if (db_utils.isUserLoggedIn(self.connection, self.cur, self.user)):
                 print 'User still logged in after %d minutes' % (x + 1)
-            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, user)), 'Test Failed: User has been logged out')   
+            self.assertTrue ((db_utils.isUserLoggedIn(self.connection, self.cur, self.user)), 'Test Failed: User has been logged out')   
              
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
-        
+    
+    def tearDown(inst):
         # Log out any users that were logged in and close all the browsers
-        if (user.loggedin == True):
-            um_utils.logout(user)
-            user.loggedin = False
+        if (inst.user.loggedin == True):
+            um_utils.logout(inst.user)
+            inst.user.loggedin = False
         time.sleep( 1 )
-        um_utils.closeBrowser(user)
+        um_utils.closeBrowser(inst.user)
             
     @classmethod
     def tearDownClass(inst):
