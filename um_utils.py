@@ -40,6 +40,7 @@ def login (user):
     time.sleep( 2 )
     # Enter username into UserName dialog
     username = WebDriverWait(user.driver, 10).until(EC.presence_of_element_located((By.NAME, "UserName")))
+    username.clear()
     username.send_keys(user.username)
 
     # Enter password into Password dialog (assume password is quantel@)
@@ -88,4 +89,7 @@ def logout (user):
 def closeBrowser(user):
     print 'Closing browser'
     user.driver.close()
+    
+def loginPage(user):
+    user.driver.get(ipAddress + "/quantel/um/login.aspx?ReturnUrl=/go/")
     

@@ -58,6 +58,7 @@ class ValidLicenseTest(unittest.TestCase):
             result = um_utils.login(user)
             if (result == 0 or result == 1):
                 user.loggedin = True 
+                self.assertTrue ((db_utils.getNumberOfActiveUsers(self.connection, self.cur) > 0), 'Test Failed: Check that you are using the correct SQL DB!!!!!!.')
             count = db_utils.getNumberOfActiveUsers(self.connection, self.cur)
             if (result == 3): # Maximum number of users are logged in. Check that the number logged in is correct.
                 self.assertFalse ((count < maxAdmins), 'Test Failed: User should be able to log in.')

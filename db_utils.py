@@ -2,7 +2,9 @@ import pyodbc
 
 def connectToDb():
     # Returns a connection to the sql databse specified in the connection string below
+    # Note: address of the db can be found in C:\Data\Rio Transformer Tx.x.x.xx\DLL_Data\Quantel\QCIFSBin\Web.config on the transformers
     connection = pyodbc.connect('Driver={SQL Server}; Server=10.165.250.244; Database=session_db; uid=sa; pwd=0sql0')
+    print 'db_utils.py: Connecting to SQL Server 10.165.250.244'
     return connection
   
 def closeConnection(connection, cur):
@@ -133,7 +135,31 @@ def isUserLoggedIn (connection, cur, user):
         return True
     else:
         return False
+        
+def isUserLockedOut (connection, cur, user): 
+    username = user.username
+    sql_command= """
+    SELECT COUNT(*)
+    FROM [session_db].[dbo].[aspnet_Membership]
+    WHERE Email LIKE '""" + username + """%'
+    AND IsLockedOut = 1"""
+    cur.execute(sql_command)
+    count = int(str(cur.fetchall()[0][0]))
+    if (count == 1):
+        return True
+    else:
+        return False
 
+def resetFailedPasswordAttemptCount (connection, cur, user):
+    username = user.username
+    sql_command= """
+    UPDATE [session_db].[dbo].[aspnet_Membership]
+    SET [FailedPasswordAttemptCount] = 0
+    WHERE Email LIKE  '""" + username + "%'"
+    print 'SQL Command: %s ' % sql_command
+    cur.execute(sql_command)    
+    connection.commit()
+    
 def deleteLicencesTable (connection, cur): 
     # Delete the license table if it exists
     sql_command= """
