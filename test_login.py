@@ -2,8 +2,7 @@
 #                                                                                             # 
 # test_login.py                                                                               #
 #                                                                                             # 
-# Checks that the emergency login can be used when there is no valid license and when the max #
-# number of users has been reached.                                                           #
+# Runs tests for logging in and out, etc                                                      #
 #                                                                                             #
 ###############################################################################################
 import unittest
@@ -32,7 +31,7 @@ class LoginTest(unittest.TestCase):
         inst.maxUsers = db_utils.addFiveUserLicense(inst.connection, inst.cur)
         print 'License installed for %d users' % inst.maxUsers  
         
-    def est_login(self):
+    def test_login(self):
         # Check that user is not already logged in
         self.assertFalse(db_utils.isUserLoggedIn(self.connection, self.cur, self.user), 'Test not valid. User is already logged in')
         # Try and log in user.
@@ -44,7 +43,7 @@ class LoginTest(unittest.TestCase):
         print 'Sleeping for 2 secs.................'
         time.sleep( 2 )
         
-    def est_logout(self):      
+    def test_logout(self):      
         # log user in
         um_utils.loginPage(self.user)
         result = um_utils.login(self.user)
@@ -68,16 +67,44 @@ class LoginTest(unittest.TestCase):
         db_utils.resetFailedPasswordAttemptCount(self.connection, self.cur, self.user)
         
         for count in range(0, 10):
+            # Check that account is not blocked
+            self.assertFalse(db_utils.isUserLockedOut(self.connection, self.cur, self.user))
             # Try and log in user.
             result = um_utils.login(self.user)
-            print 'Attempts = %d  Result = %d' % (count + 1, result)
             lockedout = db_utils.isUserLockedOut(self.connection, self.cur, self.user)
-            print 'Lockedout = %d' % lockedout
-
-        # ****************** Test needs finishing ****************************
-        # Reset failed password count
-        # db_utils.resetFailedPasswordAttemptCount(self.connection, self.cur, self.user)
+            self.assertTrue(result == 2, 'Wrong error message displayed')
+            print 'Attempts = %d  Result = %d  Locked out = %d' % (count + 1, result, lockedout)
         
+        # Check that users account is blocked
+        print 'User has entered 10 incorrect passwords. Account should be blocked:'
+        print 'Locked out = %d' % db_utils.isUserLockedOut(self.connection, self.cur, self.user)
+        self.assertTrue(db_utils.isUserLockedOut(self.connection, self.cur, self.user))
+        
+        # Reset failed password count and unblock user
+        print 'Unlocking user account......'
+        db_utils.resetFailedPasswordAttemptCount(self.connection, self.cur, self.user)
+        db_utils.unBlockUser(self.connection, self.cur, self.user)
+        # Check that user has been unlocked
+        lockedout = db_utils.isUserLockedOut(self.connection, self.cur, self.user)
+        print 'Locked out = %d' % lockedout
+        
+    def test_forgotten_password(self):
+        # Check that user is not already logged in
+        self.assertFalse(db_utils.isUserLoggedIn(self.connection, self.cur, self.user), 'Test not valid. User is already logged in')    
+        
+        # Click on forgotten password button, answer security question and recieve new password
+        new_password_text  = um_utils.forgottenPassword(self.user)
+        print 'Message: %s' % new_password_text
+        self.assertTrue(new_password_text.startswith('Your password has been successfully reset to:'),"Password not reset")
+        # New password is the last 14 chars of the string
+        new_password = new_password_text[-14:]
+        print 'New Password: %s' % new_password
+        
+        # Reset the new password back to quantel@
+        confirmation = um_utils.resetPassword (self.user, new_password)
+        print 'Message: %s' % confirmation
+        self.assertTrue(confirmation.startswith('Change Password Complete'),"Password change failed")
+
     def tearDown(inst):
         # Log out user at the end of each test
         if (inst.user.loggedin == True):

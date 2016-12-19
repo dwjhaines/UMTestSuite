@@ -156,7 +156,15 @@ def resetFailedPasswordAttemptCount (connection, cur, user):
     UPDATE [session_db].[dbo].[aspnet_Membership]
     SET [FailedPasswordAttemptCount] = 0
     WHERE Email LIKE  '""" + username + "%'"
-    print 'SQL Command: %s ' % sql_command
+    cur.execute(sql_command)    
+    connection.commit()
+    
+def unBlockUser (connection, cur, user):
+    username = user.username
+    sql_command= """
+    UPDATE [session_db].[dbo].[aspnet_Membership]
+    SET [IsLockedOut] = 0
+    WHERE Email LIKE  '""" + username + "%'"
     cur.execute(sql_command)    
     connection.commit()
     

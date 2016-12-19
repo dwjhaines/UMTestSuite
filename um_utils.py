@@ -38,6 +38,9 @@ def login (user):
     # Logs in the user
     print 'Attempting Login: %s' % user.username
     time.sleep( 2 )
+    # Go to the Go! login page if not already there
+    user.driver.get(ipAddress + "/quantel/um/login.aspx?ReturnUrl=/go/")
+    
     # Enter username into UserName dialog
     username = WebDriverWait(user.driver, 10).until(EC.presence_of_element_located((By.NAME, "UserName")))
     username.clear()
@@ -58,6 +61,7 @@ def login (user):
     except TimeoutException:
         self.fail( "Loading timeout expired" )
         
+    result = 99
     if ( user.driver.current_url == ipAddress + "/go/"):
         # If the Go! page has been loaded then login has been successful
         print '\t%s successfullly logged in' % user.username
@@ -75,9 +79,67 @@ def login (user):
         elif 'Maximum number of users are logged in.' in divText:
             print '\tLogin failed: Maximum number of users already logged in'
             result = 3
-            
-    return result
+        elif 'Your account has been blocked' in divText:
+            print '\tLogin failed: Account has been blocked'
+            result = 4
 
+    return result
+    
+def forgottenPassword (user):
+    # Select and click on the forgotten password button
+    user.driver.find_element_by_id('ForgottenPasswordLink').click()
+    
+    # Entre username and click on the Submit button
+    username = WebDriverWait(user.driver, 10).until(EC.presence_of_element_located((By.ID, "MainContent_UserNameTxtBox")))
+    username.clear()
+    username.send_keys(user.username)
+    time.sleep( 2 )
+    user.driver.find_element_by_id('MainContent_AskQuestionButton').click()
+    time.sleep( 2 )
+    
+    # Enter answer to security question (Cat). This should not really be hardcoded but should work as long as the 
+    # question is asked.  
+    answer = WebDriverWait(user.driver, 10).until(EC.presence_of_element_located((By.ID, "MainContent_AnswerTxtBox")))
+    answer.clear()
+    answer.send_keys('Cat')
+    time.sleep( 2 )
+    user.driver.find_element_by_id('MainContent_SubmitAnswerButton').click()
+    time.sleep( 2 )
+    
+    # Retrieve new password string 
+    new_password_text = user.driver.find_element_by_id('MainContent_FeedbackLabel').text
+    # return to login page
+    user.driver.find_element_by_id('MainContent_LoginLink').click()
+    # Return new password string
+    return new_password_text
+    
+def resetPassword (user, password):
+    # Changes specified password to the standard quantel password
+    user.password = password
+    login (user)
+    user.loggedin = True
+    # Go to the Go! login page
+    user.driver.get(ipAddress + "/quantel/um/go/changepassword.aspx")
+    time.sleep( 2 )
+    
+    # Populate the change password dialog and submit
+    user.driver.find_element_by_id('MainContent_ChangePasswordControl_ChangePasswordContainerID_CurrentPassword').send_keys(user.password)
+    user.driver.find_element_by_id('MainContent_ChangePasswordControl_ChangePasswordContainerID_NewPassword').send_keys('quantel@')
+    user.driver.find_element_by_id('MainContent_ChangePasswordControl_ChangePasswordContainerID_ConfirmNewPassword').send_keys('quantel@')
+    user.driver.find_element_by_id('MainContent_ChangePasswordControl_ChangePasswordContainerID_ChangePasswordPushButton').click()
+
+    # Get the confirmation message to be returned
+    confirmation = user.driver.find_element_by_id('MainContent_ChangePasswordControl').text
+    time.sleep( 2 )
+    user.password = 'quantel@'
+    #MainContent_ChangePasswordControl_SuccessContainerID_ContinuePushButton
+    user.driver.find_element_by_id('MainContent_ChangePasswordControl_SuccessContainerID_ContinuePushButton').click()
+    time.sleep( 2 )
+    # Go to main Go! page (we currently have to be here to log out)
+    user.driver.get(ipAddress + "/quantel/go/index.html")
+    time.sleep( 2 )
+    return confirmation
+    
 def logout (user):
     element = user.driver.find_element_by_class_name('icon-user')
     hov = ActionChains(user.driver).move_to_element(element)

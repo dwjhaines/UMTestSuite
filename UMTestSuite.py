@@ -28,18 +28,18 @@ no_license_tests = unittest.TestLoader().loadTestsFromTestCase(NoLicenseTest)
 emergency_login_tests = unittest.TestLoader().loadTestsFromTestCase(EmergencyLoginTest)
 
 # create a test suite
-# test_suite = unittest.TestSuite([valid_license_tests, license_expired_tests, license_not_yet_valid_tests, incorrect_ip_address_tests, license_invalid_version_tests, corrupted_license_tests, remove_license_table_tests, remove_license_tests, no_license_tests, emergency_login_tests])
-test_suite = unittest.TestSuite([login_tests])
+test_suite = unittest.TestSuite([login_tests, valid_license_tests, license_expired_tests, license_not_yet_valid_tests, incorrect_ip_address_tests, license_invalid_version_tests, corrupted_license_tests, remove_license_table_tests, remove_license_tests, no_license_tests, emergency_login_tests])
+# test_suite = unittest.TestSuite([login_tests])
 
 # Use this line to run tests outside of TestRunner. Need to comment out all the TestRunner code below
-unittest.TextTestRunner(verbosity=2).run(test_suite)
+#unittest.TextTestRunner(verbosity=2).run(test_suite)
  
-# # open the report file
-# time = strftime("%Y_%m_%d_%H_%M")
-# outfile = open(dir + "\UMTests_" + time + ".html", "w")
+# open the report file
+time = strftime("%Y_%m_%d_%H_%M")
+outfile = open(dir + "\UMTests_" + time + ".html", "w")
  
-# # configure HTMLTestRunner options
-# runner = HTMLTestRunner.HTMLTestRunner(stream=outfile,title='Go! User Management Test Report', version='T 7.1.0.12')
+# configure HTMLTestRunner options
+runner = HTMLTestRunner.HTMLTestRunner(stream=outfile,title='Go! User Management Test Report', version='T 7.0.0.21')
  
-# # run the suite using HTMLTestRunner
-# runner.run(test_suite)
+# run the suite using HTMLTestRunner
+runner.run(test_suite)
